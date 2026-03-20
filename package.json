@@ -1,15 +1,15 @@
 {
   "name": "demo-credit-wallet",
   "version": "1.0.0",
-  "description": "Demo Credit Wallet Service - Lendsqr Backend Assessment",
-  "main": "dist/server.js",
+  "description": "",
+  "main": "dist/src/server.js",
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "test": "jest",
     "migrate": "knex --knexfile knexfile.ts migrate:latest",
     "migrate:rollback": "knex --knexfile knexfile.ts migrate:rollback"
