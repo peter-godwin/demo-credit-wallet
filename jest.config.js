@@ -6,11 +6,14 @@ module.exports = {
     moduleFileExtensions: ["ts", "js", "json"],
     collectCoverageFrom: ["src/**/*.ts", "!src/server.ts"],
     coverageDirectory: "coverage",
-    globals: {
-        "ts-jest": {
+    transformIgnorePatterns: [
+        "node_modules/(?!(uuid)/)"
+    ],
+    transform: {
+        "^.+\\.tsx?$": ["ts-jest", {
             tsconfig: {
                 strict: false,
             },
-        },
+        }],
     },
 };

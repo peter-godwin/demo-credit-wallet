@@ -9,7 +9,7 @@ const config: { [key: string]: Knex.Config } = {
         connection: {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
-            password: process.env.DB_PASS,
+            password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
             port: Number(process.env.DB_PORT),
         },
@@ -17,6 +17,22 @@ const config: { [key: string]: Knex.Config } = {
             directory: "./migrations",
         },
     },
+
+    test: {
+        client: "mysql2",
+        connection: {
+            host: process.env.DB_HOST,
+            port: Number(process.env.DB_PORT),
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_TEST_NAME,
+        },
+        migrations: {
+            directory: "./migrations",
+        },
+    },
 };
+
+
 
 export default config;
