@@ -15,6 +15,8 @@ const config: { [key: string]: Knex.Config } = {
         },
         migrations: {
             directory: "./migrations",
+            extension: "ts",
+
         },
     },
 
@@ -29,6 +31,8 @@ const config: { [key: string]: Knex.Config } = {
         },
         migrations: {
             directory: "./migrations",
+            extension: "ts",
+
         },
     },
 };
