@@ -105,7 +105,7 @@ Floating-point types (`FLOAT`, `DOUBLE`) are never used for currency due to prec
 ### Prerequisites
 - Node.js >= 18 (LTS)
 - MySQL >= 8.0
-- A [Lendsqr Adjutor API]([https://adjutor.lendsqr.com](https://api.adjutor.io/#046b0002-fdc2-4e4e-8b3a-29afb47f38b0)) key
+- A [Lendsqr Adjutor API](https://api.adjutor.io/#046b0002-fdc2-4e4e-8b3a-29afb47f38b0) key
 
 ### Installation
 
