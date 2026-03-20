@@ -33,6 +33,8 @@ Users can create accounts, fund wallets, transfer funds, and withdraw — with K
 
 ---
 
+<img width="1174" height="474" alt="demo-credit_1" src="https://github.com/user-attachments/assets/6240090e-545b-4f16-933b-2abea5184664" />
+
 ## Architecture Overview
 
 ```
