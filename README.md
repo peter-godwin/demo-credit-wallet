@@ -33,6 +33,8 @@ Users can create accounts, fund wallets, transfer funds, and withdraw — with K
 
 ---
 
+
+
 ## Architecture Overview
 
 ```
@@ -62,64 +64,7 @@ Request → Route → Middleware → Controller → Service → DB
 ---
 
 ## E-R Diagram
-
-```
-┌──────────────────────────────┐
-│           users              │
-├──────────────────────────────┤
-│ id          VARCHAR(36) PK   │
-│ first_name  VARCHAR(100)     │
-│ last_name   VARCHAR(100)     │
-│ email       VARCHAR(255) UQ  │
-│ phone       VARCHAR(20)  UQ  │
-│ bvn         VARCHAR(20)      │
-│ created_at  TIMESTAMP        │
-│ updated_at  TIMESTAMP        │
-└──────────────┬───────────────┘
-               │
-               │
-               │
-               │
-               ▼ 
-┌──────────────────────────────┐
-│           wallets            │
-├──────────────────────────────┤
-│ id             VARCHAR(36) PK│
-│ user_id        VARCHAR(36) FK│──► users.id
-│ account_number VARCHAR(20) UQ│
-│ balance        DECIMAL(15,2) │
-│ is_active      BOOLEAN       │
-│ created_at     TIMESTAMP     │
-│ updated_at     TIMESTAMP     │
-└──────────────┬───────────────┘
-               │ 
-               │
-               │ 
-               │
-               ▼ 
-┌──────────────────────────────────────┐
-│             transactions             │
-├──────────────────────────────────────┤
-│ id                   VARCHAR(36) PK  │
-│ wallet_id            VARCHAR(36) FK  │──► wallets.id
-│ reference            VARCHAR(100) UQ │
-│ type                 ENUM(credit,    │
-│                           debit)     │
-│ category             ENUM(fund,      │
-│                      transfer_in,    │
-│                      transfer_out,   │
-│                      withdrawal)     │
-│ amount               DECIMAL(15,2)   │
-│ balance_before       DECIMAL(15,2)   │
-│ balance_after        DECIMAL(15,2)   │
-│ description          VARCHAR(255)    │
-│ counterpart_wallet_id VARCHAR(36)    │
-│ status               ENUM(pending,   │
-│                       success,failed)│
-│ created_at           TIMESTAMP       │
-│ updated_at           TIMESTAMP       │
-└──────────────────────────────────────┘
-```
+<img width="1174" height="474" alt="demo-credit_1" src="https://github.com/user-attachments/assets/6240090e-545b-4f16-933b-2abea5184664" />
 
 **Relationships:**
 - One `user` → one `wallet` 
@@ -160,7 +105,7 @@ Floating-point types (`FLOAT`, `DOUBLE`) are never used for currency due to prec
 ### Prerequisites
 - Node.js >= 18 (LTS)
 - MySQL >= 8.0
-- A [Lendsqr Adjutor API](https://adjutor.lendsqr.com) key
+- A [Lendsqr Adjutor API](https://api.adjutor.io/#046b0002-fdc2-4e4e-8b3a-29afb47f38b0) key
 
 ### Installation
 
