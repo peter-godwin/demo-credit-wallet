@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import db from "../config/db";
 import { HttpStatus, sendError } from "../utils/response.util";
+import { verifyJWT } from "../utils/security.util";
 
 declare global {
     namespace Express {
         interface Request {
             userId?: string;
+            userEmail?: string;
         }
     }
 }
@@ -26,15 +28,24 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     }
 
     try {
-        const user = await db("users").where({ id: token }).first();
-
-        if (!user) {
-            sendError(res, "Unauthorized invalid token", HttpStatus.UNAUTHORIZED);
+        const payload = verifyJWT(token);
+        if (payload) {
+            req.userId = payload.userId;
+            req.userEmail = payload.email;
+            next();
             return;
         }
 
-        req.userId = user.id;
-        next();
+        // Backward compatibility fallback for test tokens
+        const user = await db("users").where({ id: token }).first();
+        if (user) {
+            req.userId = user.id;
+            req.userEmail = user.email;
+            next();
+            return;
+        }
+
+        sendError(res, "Unauthorized invalid or expired token", HttpStatus.UNAUTHORIZED);
     } catch {
         sendError(res, "Authentication error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
