@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import db from "../config/db";
-import { HttpStatus, sendError } from "../utils/response.util";
+import { HttpStatus, sendError } from "../../utils/response.util";
 import { verifyJWT } from "../utils/security.util";
 
 declare global {
