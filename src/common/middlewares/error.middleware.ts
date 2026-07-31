@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../errors/app-error";
-import { HttpStatus, sendError } from "../utils/response.util";
+import { HttpStatus, sendError } from "../../utils/response.util";
 
 export const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction): Response => {
     if (err instanceof AppError) {

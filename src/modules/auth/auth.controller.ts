@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import authService from "./auth.service";
 import userService from "../user/user.service";
-import { HttpStatus, sendError, sendSuccess, sendValidationError } from "../../common/utils/response.util";
-import { validateCreateUser } from "../../common/utils/validation.util";
+import { HttpStatus, sendError, sendSuccess, sendValidationError } from "../../utils/response.util";
+import { validateCreateUser } from "../../utils/validation.util";
 
 export class AuthController {
     async register(req: Request, res: Response): Promise<void> {
