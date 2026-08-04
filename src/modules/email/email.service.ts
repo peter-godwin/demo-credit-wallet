@@ -33,7 +33,7 @@ export class EmailService {
     }
 
     async sendEmail(options: SendEmailOptions): Promise<boolean> {
-        const fromAddress = process.env.SMTP_FROM || '"Demo Credit Wallet" <no-reply@democredit.com>';
+        const fromAddress = process.env.SMTP_FROM || '"LendPay Wallet" <no-reply@lendpay.com>';
 
         if (this.transporter) {
             try {
@@ -61,10 +61,10 @@ export class EmailService {
     }
 
     async sendVerificationOTP(email: string, firstName: string, code: string): Promise<boolean> {
-        const subject = "Verify Your Demo Credit Account";
+        const subject = "Verify Your LendPay Account";
         const html = `
             <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-                <h2>Welcome to Demo Credit Wallet, ${firstName}!</h2>
+                <h2>Welcome to LendPay Wallet, ${firstName}!</h2>
                 <p>Please use the following 6-digit verification code to complete your registration:</p>
                 <div style="background: #f4f6f8; padding: 15px; text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 5px; color: #2563eb; border-radius: 8px; margin: 20px 0;">
                     ${code}
@@ -73,17 +73,17 @@ export class EmailService {
                 <p>If you did not request this verification, please ignore this email.</p>
             </div>
         `;
-        const text = `Welcome ${firstName}! Your Demo Credit verification code is: ${code}. It expires in 15 minutes.`;
+        const text = `Welcome ${firstName}! Your LendPay verification code is: ${code}. It expires in 15 minutes.`;
 
         return this.sendEmail({ to: email, subject, html, text });
     }
 
     async sendPasswordResetOTP(email: string, firstName: string, code: string): Promise<boolean> {
-        const subject = "Reset Your Demo Credit Password";
+        const subject = "Reset Your LendPay Password";
         const html = `
             <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
                 <h2>Reset Your Password, ${firstName}</h2>
-                <p>We received a request to reset your Demo Credit Wallet password.</p>
+                <p>We received a request to reset your LendPay Wallet password.</p>
                 <p>Please use the following 6-digit code to reset your password:</p>
                 <div style="background: #f4f6f8; padding: 15px; text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 5px; color: #dc2626; border-radius: 8px; margin: 20px 0;">
                     ${code}
@@ -92,7 +92,7 @@ export class EmailService {
                 <p>If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>
             </div>
         `;
-        const text = `Reset your Demo Credit password. Your code is: ${code}. It expires in 30 minutes.`;
+        const text = `Reset your LendPay password. Your code is: ${code}. It expires in 30 minutes.`;
 
         return this.sendEmail({ to: email, subject, html, text });
     }
