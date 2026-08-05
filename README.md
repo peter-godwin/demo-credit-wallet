@@ -1,4 +1,4 @@
-# Demo Credit Wallet Service
+# LendPay Wallet Service
 
 A RESTful wallet API built for the **Lendsqr Backend Engineering Assessment**.  
 Users can create accounts, fund wallets, transfer funds, and withdraw — with Karma blacklist protection at onboarding.

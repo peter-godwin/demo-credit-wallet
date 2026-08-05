@@ -4,9 +4,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET || "demo-credit-super-secret-jwt-key-2026";
+const JWT_SECRET = process.env.JWT_SECRET || "lend-pay-super-secret-jwt-key-2026";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "demo-credit-super-secret-refresh-key-2026";
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "lend-pay-super-secret-refresh-key-2026";
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 
 export interface JWTPayload {

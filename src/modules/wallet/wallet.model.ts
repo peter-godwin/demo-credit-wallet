@@ -21,9 +21,12 @@ export interface TransferDTO {
     recipient_account_number: string;
     amount: number;
     description?: string;
+    pin?: string;
 }
 
 export interface WithdrawDTO {
     amount: number;
     description?: string;
+    pin?: string;
 }
+

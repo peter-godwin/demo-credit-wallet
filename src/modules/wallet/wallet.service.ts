@@ -3,6 +3,9 @@ import db from "../../config/db";
 import { FundWalletDTO, TransferDTO, Wallet, WithdrawDTO } from "./wallet.model";
 import { Transaction } from "./transaction.model";
 import { generateReference } from "../../utils/account.util";
+import { comparePin } from "../../common/utils/security.util";
+
+const roundCurrency = (amount: number): number => Math.round(amount * 100) / 100;
 
 export class WalletService {
     async getWalletByUserId(userId: string): Promise<Wallet | null> {
@@ -22,8 +25,9 @@ export class WalletService {
 
             if (!wallet) throw new Error("Wallet not found or inactive");
 
-            const balanceBefore = parseFloat(wallet.balance);
-            const balanceAfter = balanceBefore + dto.amount;
+            const amount = roundCurrency(dto.amount);
+            const balanceBefore = roundCurrency(parseFloat(wallet.balance));
+            const balanceAfter = roundCurrency(balanceBefore + amount);
 
             await trx("wallets")
                 .where({ id: wallet.id })
@@ -38,7 +42,7 @@ export class WalletService {
                 reference,
                 type: "credit",
                 category: "fund",
-                amount: dto.amount,
+                amount,
                 balance_before: balanceBefore,
                 balance_after: balanceAfter,
                 description: "Wallet funding",
@@ -56,36 +60,57 @@ export class WalletService {
         senderWallet: Wallet;
         transaction: Transaction;
     }> {
+        const senderUser = await db("users").where({ id: senderUserId }).first();
+        if (senderUser && senderUser.transaction_pin_hash) {
+            if (!dto.pin) {
+                throw new Error("Transaction PIN is required");
+            }
+            const isPinValid = await comparePin(dto.pin, senderUser.transaction_pin_hash);
+            if (!isPinValid) {
+                throw new Error("Invalid transaction PIN");
+            }
+        }
+
         return db.transaction(async (trx) => {
-            const senderWallet = await trx("wallets")
+            // Find wallets first to determine sorted IDs for deterministic locking order
+            const initialSenderWallet = await trx("wallets")
                 .where({ user_id: senderUserId, is_active: true })
-                .forUpdate()
                 .first();
 
-            if (!senderWallet) throw new Error("Sender wallet not found or inactive");
+            if (!initialSenderWallet) throw new Error("Sender wallet not found or inactive");
 
-            const recipientWallet = await trx("wallets")
+            const initialRecipientWallet = await trx("wallets")
                 .where({ account_number: dto.recipient_account_number, is_active: true })
-                .forUpdate()
                 .first();
 
-            if (!recipientWallet) {
+            if (!initialRecipientWallet) {
                 throw new Error("Recipient account not found");
             }
 
-            if (senderWallet.id === recipientWallet.id) {
+            if (initialSenderWallet.id === initialRecipientWallet.id) {
                 throw new Error("Cannot transfer funds to your own wallet");
             }
 
-            const senderBalanceBefore = parseFloat(senderWallet.balance);
+            // Lock wallets in deterministic order by wallet ID to prevent deadlocks
+            const sortedIds = [initialSenderWallet.id, initialRecipientWallet.id].sort();
+            for (const id of sortedIds) {
+                await trx("wallets").where({ id }).forUpdate().first();
+            }
 
-            if (senderBalanceBefore < dto.amount) {
+            // Re-read locked wallet records
+            const [senderWallet] = await trx("wallets").where({ id: initialSenderWallet.id });
+            const [recipientWallet] = await trx("wallets").where({ id: initialRecipientWallet.id });
+
+            const amount = roundCurrency(dto.amount);
+            const senderBalanceBefore = roundCurrency(parseFloat(senderWallet.balance));
+
+            if (senderBalanceBefore < amount) {
                 throw new Error("Insufficient funds");
             }
 
-            const senderBalanceAfter = senderBalanceBefore - dto.amount;
-            const recipientBalanceBefore = parseFloat(recipientWallet.balance);
-            const recipientBalanceAfter = recipientBalanceBefore + dto.amount;
+            const senderBalanceAfter = roundCurrency(senderBalanceBefore - amount);
+            const recipientBalanceBefore = roundCurrency(parseFloat(recipientWallet.balance));
+            const recipientBalanceAfter = roundCurrency(recipientBalanceBefore + amount);
 
             await trx("wallets")
                 .where({ id: senderWallet.id })
@@ -106,7 +131,7 @@ export class WalletService {
                 reference,
                 type: "debit",
                 category: "transfer_out",
-                amount: dto.amount,
+                amount,
                 balance_before: senderBalanceBefore,
                 balance_after: senderBalanceAfter,
                 description,
@@ -120,7 +145,7 @@ export class WalletService {
                 reference: `${reference}-CR`,
                 type: "credit",
                 category: "transfer_in",
-                amount: dto.amount,
+                amount,
                 balance_before: recipientBalanceBefore,
                 balance_after: recipientBalanceAfter,
                 description,
@@ -136,6 +161,17 @@ export class WalletService {
     }
 
     async withdrawFunds(userId: string, dto: WithdrawDTO): Promise<{ wallet: Wallet; transaction: Transaction }> {
+        const user = await db("users").where({ id: userId }).first();
+        if (user && user.transaction_pin_hash) {
+            if (!dto.pin) {
+                throw new Error("Transaction PIN is required");
+            }
+            const isPinValid = await comparePin(dto.pin, user.transaction_pin_hash);
+            if (!isPinValid) {
+                throw new Error("Invalid transaction PIN");
+            }
+        }
+
         return db.transaction(async (trx) => {
             const wallet = await trx("wallets")
                 .where({ user_id: userId, is_active: true })
@@ -144,13 +180,14 @@ export class WalletService {
 
             if (!wallet) throw new Error("Wallet not found or inactive");
 
-            const balanceBefore = parseFloat(wallet.balance);
+            const amount = roundCurrency(dto.amount);
+            const balanceBefore = roundCurrency(parseFloat(wallet.balance));
 
-            if (balanceBefore < dto.amount) {
+            if (balanceBefore < amount) {
                 throw new Error("Insufficient funds");
             }
 
-            const balanceAfter = balanceBefore - dto.amount;
+            const balanceAfter = roundCurrency(balanceBefore - amount);
 
             await trx("wallets")
                 .where({ id: wallet.id })
@@ -165,7 +202,7 @@ export class WalletService {
                 reference,
                 type: "debit",
                 category: "withdrawal",
-                amount: dto.amount,
+                amount,
                 balance_before: balanceBefore,
                 balance_after: balanceAfter,
                 description: dto.description,

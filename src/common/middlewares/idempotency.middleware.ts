@@ -19,6 +19,7 @@ export const idempotencyHandler = () => {
                 .first();
 
             if (existingRecord) {
+                res.setHeader("X-Idempotent-Replayed", "true");
                 res.status(existingRecord.response_code).json(JSON.parse(existingRecord.response_body));
                 return;
             }
