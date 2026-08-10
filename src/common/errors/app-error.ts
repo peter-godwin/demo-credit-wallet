@@ -1,4 +1,4 @@
-import { HttpStatus } from "../utils/response.util";
+import { HttpStatus } from "../../utils/response.util";
 
 export class AppError extends Error {
     public readonly statusCode: number;
