@@ -1,7 +1,7 @@
-# Demo Credit Wallet Service
+# LendPay Wallet Service
 
-A RESTful wallet API built for the **Lendsqr Backend Engineering Assessment**.  
-Users can create accounts, fund wallets, transfer funds, and withdraw — with Karma blacklist protection at onboarding.
+A RESTful wallet API.  
+Users can create accounts, fund wallets, transfer funds, and withdraw — with blacklist protection at onboarding.
 
 ---
 
@@ -28,8 +28,8 @@ Users can create accounts, fund wallets, transfer funds, and withdraw — with K
 | ORM          | KnexJS                  |
 | Database     | MySQL                   |
 | Testing      | Jest + ts-jest          |
-| HTTP Client  | Axios (Adjutor API)     |
-| Deployment   | Railway  |
+| HTTP Client  | Axios                   |
+| Deployment   | Railway                 |
 
 ---
 
@@ -64,7 +64,7 @@ Request → Route → Middleware → Controller → Service → DB
 ---
 
 ## E-R Diagram
-<img width="1174" height="474" alt="demo-credit_1" src="https://github.com/user-attachments/assets/6240090e-545b-4f16-933b-2abea5184664" />
+
 
 **Relationships:**
 - One `user` → one `wallet` 
@@ -105,7 +105,6 @@ Floating-point types (`FLOAT`, `DOUBLE`) are never used for currency due to prec
 ### Prerequisites
 - Node.js >= 18 (LTS)
 - MySQL >= 8.0
-- A [Lendsqr Adjutor API](https://api.adjutor.io/#046b0002-fdc2-4e4e-8b3a-29afb47f38b0) key
 
 ### Installation
 
@@ -286,7 +285,3 @@ Tests cover:
 npm run build
 npm start
 ```
-
-Deployed at: `https://<your-name>-lendsqr-be-test.<platform>.com`
-
-GitHub: `https://github.com/<your-username>/demo-credit-wallet`

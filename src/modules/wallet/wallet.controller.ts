@@ -38,7 +38,7 @@ export class WalletController {
     }
 
     async transferFunds(req: Request, res: Response): Promise<void> {
-        const { recipient_account_number, amount, description } = req.body;
+        const { recipient_account_number, amount, description, pin } = req.body;
 
         if (!recipient_account_number || typeof recipient_account_number !== "string") {
             sendError(res, "recipient_account_number is required", HttpStatus.UNPROCESSABLE);
@@ -55,12 +55,18 @@ export class WalletController {
                 recipient_account_number,
                 amount: parseFloat(amount),
                 description,
+                pin,
             });
             sendSuccess(res, "Transfer successful", result);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : "Transfer failed";
 
-            if (message.includes("Insufficient funds") || message.includes("Recipient account not found") || message.includes("own wallet")) {
+            if (
+                message.includes("Insufficient funds") ||
+                message.includes("Recipient account not found") ||
+                message.includes("own wallet") ||
+                message.includes("PIN")
+            ) {
                 sendError(res, message, HttpStatus.BAD_REQUEST);
                 return;
             }
@@ -70,7 +76,7 @@ export class WalletController {
     }
 
     async withdrawFunds(req: Request, res: Response): Promise<void> {
-        const { amount, description } = req.body;
+        const { amount, description, pin } = req.body;
 
         if (!validateAmount(amount)) {
             sendError(res, "Amount must be a positive number", HttpStatus.UNPROCESSABLE);
@@ -81,12 +87,13 @@ export class WalletController {
             const result = await walletService.withdrawFunds(req.userId!, {
                 amount: parseFloat(amount),
                 description,
+                pin,
             });
             sendSuccess(res, "Withdrawal successful", result);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : "Withdrawal failed";
 
-            if (message.includes("Insufficient funds")) {
+            if (message.includes("Insufficient funds") || message.includes("PIN")) {
                 sendError(res, message, HttpStatus.BAD_REQUEST);
                 return;
             }
